@@ -43,27 +43,28 @@ func main() {
 
 	fieldA := generateField(FIELD_WIDTH, FIELD_HEIGHT)
 	fieldA.populate()
+	// fieldA := readFromCsv("field1.csv")
 	fieldB := generateField(len(fieldA), len(fieldA[0]))
 
 	isAturn := true
 	gen := 0
 	for {
 		if isAturn {
-			fieldA.print()
+			fieldA.print(&gen)
 			fieldA.update(fieldB)
 		} else {
-			fieldB.print()
+			fieldB.print(&gen)
 			fieldB.update(fieldA)
 		}
 		isAturn = !isAturn
-		gen++
-		tm.Printf("Generation %v\n", gen)
 		time.Sleep(time.Second / FRAME_RATE)
+		gen++
 	}
 }
 
-func (field Field) print() {
+func (field Field) print(gen *int) {
 	tm.MoveCursor(1, 1)
+	tm.Printf("Generation %v\n", *gen)
 	for i := 0; i < len(field); i++ {
 		for j := 0; j < len(field[0]); j++ {
 			if field[i][j] {
@@ -110,7 +111,6 @@ func readFromCsv(filePath string) (field Field) {
 	rows := len(records)
 	cols := len(records[0])
 	field = generateField(rows, cols)
-
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
 			if records[i][j] != "" {
@@ -118,9 +118,6 @@ func readFromCsv(filePath string) (field Field) {
 			}
 		}
 	}
-	tm.Println("readed field:")
-	tm.Println(field)
-	time.Sleep(time.Second + 10)
 	return
 }
 
