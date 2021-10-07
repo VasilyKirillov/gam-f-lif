@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/csv"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -20,12 +22,12 @@ type Field [][]bool
 func waitForEsc() {
 	keysEvents, err := kb.GetKeys(10)
 	if err != nil {
-		panic(err)
+		log.Fatal("Unable to get keyboard input", err)
 	}
 	for {
 		event := <-keysEvents
 		if event.Err != nil {
-			panic(event.Err)
+			log.Fatal("KeyEvent error", event.Err)
 		}
 		if event.Key == kb.KeyEsc {
 			break
@@ -40,9 +42,11 @@ func main() {
 	go waitForEsc()
 
 	fieldA := generateField(FIELD_WIDTH, FIELD_HEIGHT)
-	fieldB := generateField(FIELD_WIDTH, FIELD_HEIGHT)
-	isAturn := true
 	fieldA.populate()
+	fieldB := generateField(len(fieldA), len(fieldA[0]))
+
+	isAturn := true
+	gen := 0
 	for {
 		if isAturn {
 			fieldA.print()
@@ -52,6 +56,8 @@ func main() {
 			fieldB.update(fieldA)
 		}
 		isAturn = !isAturn
+		gen++
+		tm.Printf("Generation %v\n", gen)
 		time.Sleep(time.Second / FRAME_RATE)
 	}
 }
@@ -88,11 +94,37 @@ func generateField(w, h int) (field Field) {
 	return
 }
 
-func readFromCsv() (field Field) {
-	panic("not implemented")
+func readFromCsv(filePath string) (field Field) {
+	f, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal("Unable to read input file "+filePath, err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("Unable to parse file as CSV for "+filePath, err)
+	}
+
+	rows := len(records)
+	cols := len(records[0])
+	field = generateField(rows, cols)
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			if records[i][j] != "" {
+				field[i][j] = true
+			}
+		}
+	}
+	tm.Println("readed field:")
+	tm.Println(field)
+	time.Sleep(time.Second + 10)
+	return
 }
 
-func (fieldA Field) update(fieldB Field) Field {
+func (fieldA Field) update(fieldB Field) {
 	for i := 0; i < len(fieldA); i++ {
 		for j := 0; j < len(fieldA[0]); j++ {
 			nb := fieldA.calculateNeibours(i, j)
@@ -108,20 +140,19 @@ func (fieldA Field) update(fieldB Field) Field {
 			}
 		}
 	}
-	return fieldB
 }
 
 func (field Field) calculateNeibours(row, col int) (nb int) {
-	nb = 0
 	w := len(field)
 	h := len(field[0])
+	var rn, cn int
 	for i := -1; i <= 1; i++ {
 		for j := -1; j <= 1; j++ {
 			if i == 0 && j == 0 {
 				continue
 			}
-			rn := row + i
-			cn := col + j
+			rn = row + i
+			cn = col + j
 			if rn < 0 {
 				rn += w
 			}
