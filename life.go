@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	FRAME_RATE = 1
+	// frames per second
+	FRAME_RATE = 6
 )
 
 func waitForEsc() {
@@ -35,14 +36,15 @@ func main() {
 	tm.Clear()
 	go waitForEsc()
 
-	//fieldA := generateField(FIELD_WIDTH, FIELD_HEIGHT)
-	//fieldA.populate()
-	fieldA := readFromCsv("field2.csv")
+	fieldA := generateField(FIELD_WIDTH, FIELD_HEIGHT)
+	fieldA.populate()
+	//fieldA := readFromCsv("field2.csv")
 	fieldB := generateField(len(fieldA), len(fieldA[0]))
 
 	isAturn := true
 	gen := 0
 	var err error
+
 	for {
 		if isAturn {
 			fieldA.print(&gen)
@@ -55,14 +57,16 @@ func main() {
 			break
 		}
 		isAturn = !isAturn
+
 		time.Sleep(time.Second / FRAME_RATE)
 		gen++
 	}
+
 }
 
 func (field Field) print(gen *int) {
 	tm.MoveCursor(1, 1)
-	tm.Printf("Generation %v\n", *gen)
+	tm.Printf("Generation %v\n\n", *gen)
 	for i := 0; i < len(field); i++ {
 		for j := 0; j < len(field[0]); j++ {
 			if field[i][j] {
