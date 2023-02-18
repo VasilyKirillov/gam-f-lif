@@ -35,10 +35,15 @@ func waitForEsc() {
 func main() {
 	tm.Clear()
 	go waitForEsc()
+	args := os.Args
+	var fieldA Field
+	if len(args) > 1 && args[1] != "" {
+		fieldA = readFromCsv(args[1])
+	} else {
+		fieldA = generateField(FIELD_WIDTH, FIELD_HEIGHT)
+		fieldA.populate()
+	}
 
-	fieldA := generateField(FIELD_WIDTH, FIELD_HEIGHT)
-	fieldA.populate()
-	//fieldA := readFromCsv("field2.csv")
 	fieldB := generateField(len(fieldA), len(fieldA[0]))
 
 	isAturn := true

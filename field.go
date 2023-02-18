@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	FIELD_WIDTH  = 15
+	FIELD_WIDTH  = 40
 	FIELD_HEIGHT = FIELD_WIDTH
 )
 
