@@ -75,9 +75,9 @@ func (field Field) print(gen *int) {
 	for i := 0; i < len(field); i++ {
 		for j := 0; j < len(field[0]); j++ {
 			if field[i][j] {
-				tm.Print("\u2B1B") //\u25A0 ")
+				tm.Print("\u2B1B") //\u25A0
 			} else {
-				tm.Print("\u2B1C") //\u25A1 ")
+				tm.Print("\u2B1C") //\u25A1
 			}
 		}
 		tm.Println()
