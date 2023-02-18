@@ -1,0 +1,6 @@
+# install
+go mod tidy
+go build life.go field.go
+./life
+
+# ESC to quit
