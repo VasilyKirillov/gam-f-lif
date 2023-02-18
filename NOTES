@@ -1,6 +1,6 @@
 # install
 go mod tidy
 go build life.go field.go
-./life
+./life <fileName>
 
 # ESC to quit
